@@ -414,6 +414,176 @@ mod tests {
         );
     }
 
+    // OracleSet — PriceDataSeries is an array of nested PriceData objects.
+    // Variant-specific fields: OracleDocumentID, Provider, URI, LastUpdateTime,
+    // AssetClass, PriceDataSeries (array).
+    // Payload from https://xrpl.org/docs/references/protocol/transactions/types/oracleset
+    // (XRPL docs, audited 2026-04-05).
+    #[test]
+    fn test_oracle_set_real_payload_nested_array_silently_dropped() {
+        let json = r#"{
+            "TransactionType": "OracleSet",
+            "Account": "roosteri9aGNFRXZrJNYQKVBfxHiE5abg",
+            "AssetClass": "63757272656E6379",
+            "Fee": "12",
+            "LastUpdateTime": 1760397040,
+            "OracleDocumentID": 3,
+            "PriceDataSeries": [
+                {
+                    "PriceData": {
+                        "AssetPrice": "267e",
+                        "BaseAsset": "XRP",
+                        "QuoteAsset": "USD",
+                        "Scale": 3
+                    }
+                },
+                {
+                    "PriceData": {
+                        "AssetPrice": "a34",
+                        "BaseAsset": "XRP",
+                        "QuoteAsset": "EUR",
+                        "Scale": 3
+                    }
+                }
+            ],
+            "Provider": "7468726565787270",
+            "Sequence": 95076881,
+            "URI": "68747470733A2F2F6578616D706C652E636F6D"
+        }"#;
+
+        let tx: Transaction = serde_json::from_str(json).expect("OracleSet should deserialise");
+
+        assert!(
+            matches!(tx, Transaction::OracleSet(_)),
+            "Expected Transaction::OracleSet, got {tx:?}"
+        );
+
+        let common = tx.common();
+        assert_eq!(common.account, "roosteri9aGNFRXZrJNYQKVBfxHiE5abg");
+        assert_eq!(common.fee, "12");
+        assert_eq!(common.sequence, 95076881);
+
+        // Variant-specific fields including the nested PriceDataSeries array
+        // are silently dropped — BASELINE lossy contract.
+        let reserialized = serde_json::to_string(&tx).expect("should serialise");
+        assert!(
+            !reserialized.contains("PriceDataSeries"),
+            "PriceDataSeries must be silently dropped: {reserialized}"
+        );
+        assert!(
+            !reserialized.contains("OracleDocumentID"),
+            "OracleDocumentID must be silently dropped: {reserialized}"
+        );
+        assert!(
+            !reserialized.contains("LastUpdateTime"),
+            "LastUpdateTime must be silently dropped: {reserialized}"
+        );
+    }
+
+    // XChainCreateBridge — XChainBridge is a nested object with 4 sub-fields.
+    // Variant-specific fields: XChainBridge (nested), SignatureReward,
+    // MinAccountCreateAmount.
+    // Payload from https://xrpl.org/docs/references/protocol/transactions/types/xchaincreatebridge
+    // (XRPL docs, audited 2026-04-05).
+    #[test]
+    fn test_x_chain_create_bridge_real_payload_nested_object_silently_dropped() {
+        let json = r#"{
+            "TransactionType": "XChainCreateBridge",
+            "Account": "rhWQzvdmhf5vFS35vtKUSUwNZHGT53qQsg",
+            "Fee": "12",
+            "Sequence": 1,
+            "XChainBridge": {
+                "LockingChainDoor": "rhWQzvdmhf5vFS35vtKUSUwNZHGT53qQsg",
+                "LockingChainIssue": { "currency": "XRP" },
+                "IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+                "IssuingChainIssue": { "currency": "XRP" }
+            },
+            "SignatureReward": 200,
+            "MinAccountCreateAmount": 1000000
+        }"#;
+
+        let tx: Transaction =
+            serde_json::from_str(json).expect("XChainCreateBridge should deserialise");
+
+        assert!(
+            matches!(tx, Transaction::XChainCreateBridge(_)),
+            "Expected Transaction::XChainCreateBridge, got {tx:?}"
+        );
+
+        let common = tx.common();
+        assert_eq!(common.account, "rhWQzvdmhf5vFS35vtKUSUwNZHGT53qQsg");
+        assert_eq!(common.fee, "12");
+        assert_eq!(common.sequence, 1);
+
+        // Variant-specific fields including the nested XChainBridge object
+        // are silently dropped — BASELINE lossy contract.
+        let reserialized = serde_json::to_string(&tx).expect("should serialise");
+        assert!(
+            !reserialized.contains("XChainBridge"),
+            "XChainBridge must be silently dropped: {reserialized}"
+        );
+        assert!(
+            !reserialized.contains("SignatureReward"),
+            "SignatureReward must be silently dropped: {reserialized}"
+        );
+        assert!(
+            !reserialized.contains("MinAccountCreateAmount"),
+            "MinAccountCreateAmount must be silently dropped: {reserialized}"
+        );
+    }
+
+    // AMMDeposit — double-asset deposit mode (tfTwoAsset).
+    // Variant-specific fields: Asset, Asset2, Amount (token), Amount2 (XRP), Flags.
+    // Payload from https://xrpl.org/docs/references/protocol/transactions/types/ammdeposit
+    // (XRPL docs, audited 2026-04-05).
+    #[test]
+    fn test_amm_deposit_real_payload_multi_field_silently_dropped() {
+        let json = r#"{
+            "TransactionType": "AMMDeposit",
+            "Account": "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+            "Fee": "10",
+            "Sequence": 7,
+            "Flags": 1048576,
+            "Amount": {
+                "currency": "TST",
+                "issuer": "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+                "value": "2.5"
+            },
+            "Amount2": "30000000",
+            "Asset": {
+                "currency": "TST",
+                "issuer": "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd"
+            },
+            "Asset2": {
+                "currency": "XRP"
+            }
+        }"#;
+
+        let tx: Transaction = serde_json::from_str(json).expect("AMMDeposit should deserialise");
+
+        assert!(
+            matches!(tx, Transaction::AMMDeposit(_)),
+            "Expected Transaction::AMMDeposit, got {tx:?}"
+        );
+
+        let common = tx.common();
+        assert_eq!(common.account, "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm");
+        assert_eq!(common.fee, "10");
+        assert_eq!(common.sequence, 7);
+
+        // Variant-specific fields (Asset, Asset2, Amount, Amount2, Flags as AMM flag)
+        // are silently dropped — BASELINE lossy contract.
+        let reserialized = serde_json::to_string(&tx).expect("should serialise");
+        assert!(
+            !reserialized.contains("Asset2"),
+            "Asset2 must be silently dropped: {reserialized}"
+        );
+        assert!(
+            !reserialized.contains("Amount2"),
+            "Amount2 must be silently dropped: {reserialized}"
+        );
+    }
+
     // --- Regression: existing variants must survive the fix ---
 
     #[test]
