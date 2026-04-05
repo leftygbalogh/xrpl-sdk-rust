@@ -109,9 +109,18 @@ fn main() {
 
     // ── XChain family (added in Ledger v2.0) ───────────────────────────────
     println!("-- XChain variants (missing) --");
-    probe("XChainAccountCreateCommit", &tx_json("XChainAccountCreateCommit"));
-    probe("XChainAddAccountCreateAttestation", &tx_json("XChainAddAccountCreateAttestation"));
-    probe("XChainAddClaimAttestation", &tx_json("XChainAddClaimAttestation"));
+    probe(
+        "XChainAccountCreateCommit",
+        &tx_json("XChainAccountCreateCommit"),
+    );
+    probe(
+        "XChainAddAccountCreateAttestation",
+        &tx_json("XChainAddAccountCreateAttestation"),
+    );
+    probe(
+        "XChainAddClaimAttestation",
+        &tx_json("XChainAddClaimAttestation"),
+    );
     probe("XChainClaim", &tx_json("XChainClaim"));
     probe("XChainCommit", &tx_json("XChainCommit"));
     probe("XChainCreateBridge", &tx_json("XChainCreateBridge"));
