@@ -41,6 +41,52 @@ pub enum Transaction {
     SignerListSet(TransactionCommon),
     TicketCreate(TransactionCommon),
     TrustSet(TrustSetTransaction),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    AMMBid(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    AMMCreate(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    AMMDelete(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    AMMDeposit(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    AMMVote(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    AMMWithdraw(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    Clawback(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    DIDDelete(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    DIDSet(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    OracleDelete(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    OracleSet(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    XChainAccountCreateCommit(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    XChainAddAccountCreateAttestation(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    XChainAddClaimAttestation(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    XChainClaim(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    XChainCommit(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    XChainCreateBridge(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    XChainCreateClaimID(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    XChainModifyBridge(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    EnableAmendment(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    SetFee(TransactionCommon),
+    // BASELINE: variant-specific fields are not modelled and are silently dropped
+    UNLModify(TransactionCommon),
+    #[serde(other)]
+    Unknown,
 }
 
 impl Transaction {
@@ -70,6 +116,29 @@ impl Transaction {
             Transaction::SetRegularKey(t) => t,
             Transaction::SignerListSet(t) => t,
             Transaction::TicketCreate(t) => t,
+            Transaction::AMMBid(t) => t,
+            Transaction::AMMCreate(t) => t,
+            Transaction::AMMDelete(t) => t,
+            Transaction::AMMDeposit(t) => t,
+            Transaction::AMMVote(t) => t,
+            Transaction::AMMWithdraw(t) => t,
+            Transaction::Clawback(t) => t,
+            Transaction::DIDDelete(t) => t,
+            Transaction::DIDSet(t) => t,
+            Transaction::OracleDelete(t) => t,
+            Transaction::OracleSet(t) => t,
+            Transaction::XChainAccountCreateCommit(t) => t,
+            Transaction::XChainAddAccountCreateAttestation(t) => t,
+            Transaction::XChainAddClaimAttestation(t) => t,
+            Transaction::XChainClaim(t) => t,
+            Transaction::XChainCommit(t) => t,
+            Transaction::XChainCreateBridge(t) => t,
+            Transaction::XChainCreateClaimID(t) => t,
+            Transaction::XChainModifyBridge(t) => t,
+            Transaction::EnableAmendment(t) => t,
+            Transaction::SetFee(t) => t,
+            Transaction::UNLModify(t) => t,
+            Transaction::Unknown => unreachable!("common() is not available on Transaction::Unknown — this variant has no associated TransactionCommon"),
         }
     }
 }
@@ -101,6 +170,29 @@ impl Transaction {
             Transaction::SetRegularKey(t) => t,
             Transaction::SignerListSet(t) => t,
             Transaction::TicketCreate(t) => t,
+            Transaction::AMMBid(t) => t,
+            Transaction::AMMCreate(t) => t,
+            Transaction::AMMDelete(t) => t,
+            Transaction::AMMDeposit(t) => t,
+            Transaction::AMMVote(t) => t,
+            Transaction::AMMWithdraw(t) => t,
+            Transaction::Clawback(t) => t,
+            Transaction::DIDDelete(t) => t,
+            Transaction::DIDSet(t) => t,
+            Transaction::OracleDelete(t) => t,
+            Transaction::OracleSet(t) => t,
+            Transaction::XChainAccountCreateCommit(t) => t,
+            Transaction::XChainAddAccountCreateAttestation(t) => t,
+            Transaction::XChainAddClaimAttestation(t) => t,
+            Transaction::XChainClaim(t) => t,
+            Transaction::XChainCommit(t) => t,
+            Transaction::XChainCreateBridge(t) => t,
+            Transaction::XChainCreateClaimID(t) => t,
+            Transaction::XChainModifyBridge(t) => t,
+            Transaction::EnableAmendment(t) => t,
+            Transaction::SetFee(t) => t,
+            Transaction::UNLModify(t) => t,
+            Transaction::Unknown => unreachable!("common() is not available on Transaction::Unknown — this variant has no associated TransactionCommon"),
         }
     }
 }
