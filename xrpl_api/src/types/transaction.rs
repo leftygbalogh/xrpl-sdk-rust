@@ -358,6 +358,62 @@ mod tests {
         let _ = tx; // silence unused warning
     }
 
+    // --- C2: real-world fixture test — variant-specific fields are silently dropped ---
+    //
+    // AMMCreate carries variant-specific fields (Amount, Amount2, TradingFee) that are
+    // NOT modelled in TransactionCommon (BASELINE comment on the variant).  This test
+    // uses a realistic ledger payload and asserts:
+    //   1. Deserialization succeeds (no Err, no panic).
+    //   2. TransactionCommon fields are correct.
+    //   3. The variant-specific fields are not accessible — they are silently dropped —
+    //      which is the documented lossy contract for BASELINE variants.
+    //
+    // Payload is representative of the AMMCreate transaction format described at
+    // https://xrpl.org/ammcreate.html (XRPL docs, audited 2026-04-05).
+    #[test]
+    fn test_amm_create_real_payload_common_fields_correct_variant_fields_dropped() {
+        let json = r#"{
+            "TransactionType": "AMMCreate",
+            "Account": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+            "Fee": "10",
+            "Sequence": 1,
+            "Amount": {
+                "currency": "USD",
+                "issuer": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+                "value": "100"
+            },
+            "Amount2": "100000000",
+            "TradingFee": 500
+        }"#;
+
+        let tx: Transaction = serde_json::from_str(json).expect("AMMCreate should deserialise");
+
+        // Must be the AMMCreate variant — not Unknown
+        assert!(
+            matches!(tx, Transaction::AMMCreate(_)),
+            "Expected Transaction::AMMCreate, got {tx:?}"
+        );
+
+        // TransactionCommon fields are intact
+        let common = tx.common();
+        assert_eq!(common.account, "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh");
+        assert_eq!(common.fee, "10");
+        assert_eq!(common.sequence, 1);
+
+        // Variant-specific fields (Amount, Amount2, TradingFee) are not modelled.
+        // They are silently dropped — this is the BASELINE lossy contract.
+        // Re-serialise and confirm they are absent from the output.
+        let reserialized = serde_json::to_string(&tx).expect("should serialise");
+        assert!(
+            !reserialized.contains("Amount2"),
+            "Amount2 must be silently dropped: {reserialized}"
+        );
+        assert!(
+            !reserialized.contains("TradingFee"),
+            "TradingFee must be silently dropped: {reserialized}"
+        );
+    }
+
     // --- Regression: existing variants must survive the fix ---
 
     #[test]
